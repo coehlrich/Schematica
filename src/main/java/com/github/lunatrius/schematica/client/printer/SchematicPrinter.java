@@ -329,11 +329,17 @@ public class SchematicPrinter {
         final EnumFacing side = direction.getOpposite();
         final Vec3d hitVec = new Vec3d(offset.getX() + offsetX, offset.getY() + offsetY, offset.getZ() + offsetZ);
         final int range = ConfigurationHandler.placeDistance;
+        final int distanceX = pos.getX() - player.getPosition().getX();
+        final int distanceY = pos.getY() - player.getPosition().getY();
+        final int distanceZ = pos.getZ() - player.getPosition().getZ();
+        distanceX = Math.abs(distanceX);
+        distanceY = Math.abs(distanceY);
+        distanceZ = Math.abs(distanceZ);
 
         success = placeBlock(world, player, itemStack, offset, side, hitVec, hand);
         for (int i = 0; success && i < extraClicks; i++) {
             success = placeBlock(world, player, itemStack, offset, side, hitVec, hand);
-            if (range > pos.getX() - player.getPosition().getX() || range > pos.getY() - player.getPosition().getY() || range > pos.getZ() - player.getPosition().getZ()) {
+            if (range > distanceX || range > distanceY || range > distanceZ) {
                 return false;
             }
         }
