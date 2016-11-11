@@ -13,6 +13,7 @@ import com.github.lunatrius.schematica.handler.ConfigurationHandler;
 import com.github.lunatrius.schematica.proxy.ClientProxy;
 import com.github.lunatrius.schematica.reference.Constants;
 import com.github.lunatrius.schematica.reference.Reference;
+import com.github.lunatrius.schematica.util.IsBlockInsideRange;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -48,6 +49,7 @@ public class SchematicPrinter {
     private SchematicWorld schematic = null;
     private byte[][][] timeout = null;
     private HashMap<BlockPos, Integer> syncBlacklist = new HashMap<BlockPos, Integer>();
+    private IsBlockInsideRange CheckIfBlockIsInsideRange = new IsBlockInsideRange();
 
     public boolean isEnabled() {
         return this.isEnabled;
@@ -329,17 +331,11 @@ public class SchematicPrinter {
         final EnumFacing side = direction.getOpposite();
         final Vec3d hitVec = new Vec3d(offset.getX() + offsetX, offset.getY() + offsetY, offset.getZ() + offsetZ);
         final int range = ConfigurationHandler.placeDistance;
-        final int distanceX = pos.getX() - player.getPosition().getX();
-        final int distanceY = pos.getY() - player.getPosition().getY();
-        final int distanceZ = pos.getZ() - player.getPosition().getZ();
-        distanceX = Math.abs(distanceX);
-        distanceY = Math.abs(distanceY);
-        distanceZ = Math.abs(distanceZ);
 
         success = placeBlock(world, player, itemStack, offset, side, hitVec, hand);
         for (int i = 0; success && i < extraClicks; i++) {
             success = placeBlock(world, player, itemStack, offset, side, hitVec, hand);
-            if (range > distanceX || range > distanceY || range > distanceZ) {
+            if (!CheckIfBlockIsInsideRange.CheckIfBlockIsInsideRange(pos, ConfigurationHandler.placeDistance, player.getPosition())) {
                 return false;
             }
         }
